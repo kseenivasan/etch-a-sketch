@@ -1,0 +1,1 @@
+The purpose of this project is to practice DOM manipulation by creating a simple etch-a-sketch.
