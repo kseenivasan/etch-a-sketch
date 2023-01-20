@@ -1,5 +1,14 @@
 
 const mainDiv = document.querySelector('.main');
+const buttonContainer = document.createElement('div');
+const button = document.createElement('button');
+button.textContent = 'Select Size';
+buttonContainer.style.display = 'flex';
+buttonContainer.style.flex = '1';
+buttonContainer.appendChild(button);
+buttonContainer.style.justifyContent = 'center';
+buttonContainer.style.alignItems = 'center';
+mainDiv.appendChild(buttonContainer);
 for (let i = 0; i < 16; i++) {
     let flexContainer = document.createElement('div');
     flexContainer.style.display = 'flex';
