@@ -12,27 +12,92 @@ mainDiv.appendChild(buttonContainer);
 
 
 const gridWidth = 760;
+
+function randomIntensity() {
+    return Math.floor(Math.random()*256);
+}
+
 function createGrid(gridWidth, numSquares) {
     for (let i = 0; i < numSquares; i++) {
         let flexContainer = document.createElement('div');
         flexContainer.classList.add("flex-container");
         flexContainer.style.display = 'flex';
         for (let j = 0; j < numSquares; j++) {
-            let div = document.createElement('div');
-            div.style.width = gridWidth/numSquares + 'px';
-            div.style.height = gridWidth/numSquares + 'px';
-            div.style.flex = '0 1 auto';
-            div.classList.add("grid");
-            flexContainer.appendChild(div);
+            let singleSquare = document.createElement('div');
+            singleSquare.style.width = gridWidth/numSquares + 'px';
+            singleSquare.style.height = gridWidth/numSquares + 'px';
+            singleSquare.style.flex = '0 1 auto';
+            singleSquare.style.backgroundColor = 'white';
+            singleSquare.classList.add("grid");
+            flexContainer.appendChild(singleSquare);
         }
         mainDiv.appendChild(flexContainer);
     }
     
     const grids = document.querySelectorAll(".grid");
     grids.forEach( (grid) => grid.addEventListener('mouseover', (event) => {
-        event.target.style.backgroundColor = 'yellow';
-        console.log("Hovered");
+        if(event.target.style.backgroundColor === 'white') {
+            event.target.style.backgroundColor = 'rgb(' + randomIntensity() +',' +randomIntensity() + ',' + randomIntensity() +')';
+            console.log("initial setting");
+        }
+
+        else {
+            let hsl = convertRGBtoHSL(event.target.style.backgroundColor);
+            let lightness = 0;
+            if (hsl[2] > 10) {
+                lightness = hsl[2] - 10;
+            }
+            else {
+                lightness = 0;
+            }
+            event.target.style.backgroundColor = "hsl(" + hsl[0] + "," + hsl[1] + "%," + lightness + "%)";
+            console.log(hsl);
+            console.log(convertRGBtoHSL(event.target.style.backgroundColor));
+            
+        }
+        
     }));
+}
+
+function convertRGBtoHSL(squareRGB) {
+    let temp = squareRGB.split("(");
+    temp2 = temp[1].split(")");
+    temp3 = temp2[0].split(",");
+    let red = temp3[0].trim()/255;
+    let green = temp3[1].trim()/255;
+    let blue = temp3[2].trim()/255;
+    let cmax = Math.max(red,green,blue);
+    let cmin = Math.min(red,green,blue);
+    let delta = cmax - cmin;
+    let hue;
+    let saturation;
+    let lightness = (cmax + cmin)/2;
+    if (delta === 0) {
+        hue = 0;
+        saturation = 0;
+    }
+    else if (cmax === red) {
+        hue = ((green-blue)/delta) % 6;
+    }
+    else if (cmax === green) {
+        hue = (blue - red)/delta + 2;
+    }
+    else if (cmax === blue) {
+        hue = (red - green)/delta + 4;
+    }
+    hue *= 60;
+    if (hue < 0) {
+        hue += 360;
+    }
+    if (lightness === 0) {
+        saturation = 0;
+    }
+    else {
+        saturation = delta/(1-Math.abs(2*lightness - 1));
+    }
+    let hsl = [hue,saturation*100,lightness*100];
+    return hsl;
+
 }
 
 function removeGrid() {
@@ -64,6 +129,6 @@ button.addEventListener('click', () => {
     }
     else {
         removeGrid();
-        createGrid(gridWidth,Number.parseInt(input));
+        createGrid(gridWidth,input);
     }
 })
